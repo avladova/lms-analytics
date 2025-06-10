@@ -10,12 +10,12 @@
 - [Папка с данными по дисциплине Анализ данных русскоязычных и англоязычных групп](data/)
 
 ## Дашборды /
--[Файл index.html с базовым дизайном дашбордов студента и преподавателя, нуждающихся в улучшении](tree/dashboard)
--[Сайт](https://avladova.github.io/lms-analytics/)
+- [Файл index.html с базовым дизайном дашбордов студента и преподавателя, нуждающихся в улучшении](https://github.com/avladova/lms-analytics/tree/feature/dashboard/index.html)
+- [Сайт](https://avladova.github.io/lms-analytics/)
 
 ## Расчеты /development
 - [Пример файла с загрузкой данных из /data](development/baseline.R)
-- 
+  
 ## Отчет  /report
 - [Пример матописания гипотезы](report/Пример%20матописания%20гипотезы.pdf)
 - [Статья по прогнозу оценок](report/Статья%20прогноз%20академ%20риска.pdf)
