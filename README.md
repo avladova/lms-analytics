@@ -10,7 +10,7 @@
 - [Папка с данными по дисциплине Анализ данных русскоязычных и англоязычных групп](data/)
 
 ## Дашборды /
-- [Файл index.html с базовым дизайном дашбордов студента и преподавателя, нуждающихся в улучшении](https://github.com/avladova/lms-analytics/tree/feature/dashboard/index.html)
+- [Файл index.html с базовым дизайном дашбордов студента и преподавателя, нуждающихся в улучшении](https://github.com/avladova/lms-analytics/tree/dashboard/index.html)
 - [Сайт](https://avladova.github.io/lms-analytics/)
 
 ## Расчеты /development
