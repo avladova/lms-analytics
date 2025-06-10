@@ -23,3 +23,4 @@
 ## Помощь /help
 - [Коротко почему и как используем github](help/githelp.txt)
 - [Короткий хелп по ведению совместного проекта в posit.cloud](https://docs.posit.co/cloud/guide/projects/)
+- [Как разместить сайт на github pages](https://netology-code.github.io/guides/github-pages/)
