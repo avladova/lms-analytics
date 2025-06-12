@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитика успеваемости</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --primary-hover: #0d62c9;
+            --success-color: #00c853;
+            --success-hover: #00b248;
+            --warning-color: #ff9100;
+            --danger-color: #ff3d00;
+            --text-color: #202124;
+            --text-light: #5f6368;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 20px 0;
+            background: linear-gradient(135deg, var(--primary-color), #4a90e2);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .header h1 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .campus-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 12px 24px;
+            background-color: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .campus-btn:hover {
+            background-color: #f1f3f4;
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .campus-btn {
+                position: relative;
+                right: auto;
+                top: auto;
+                transform: none;
+                margin-top: 15px;
+                display: inline-flex;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 15px var(--shadow-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .progress-info {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .btn {
+            margin-top: 15px;
+            padding: 12px 24px;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .compare-btn {
+            background-color: var(--success-color);
+        }
+
+        .compare-btn:hover {
+            background-color: var(--success-hover);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+        }
+
+        .ranking {
+            text-align: center;
+        }
+
+        .ranking-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 15px 0;
+            text-shadow: 0 2px 4px rgba(26, 115, 232, 0.2);
+        }
+
+        .deadlines {
+            margin-top: 10px;
+        }
+
+        .deadline-item {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+
+        .deadline-item:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .deadline-item.overdue {
+            color: var(--danger-color);
+            font-weight: bold;
+            background-color: rgba(255, 61, 0, 0.08);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .deadline-item.upcoming {
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+            background-color: rgba(255, 145, 0, 0.08);
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .subject-item {
+            display: grid;
+            grid-template-columns: 1fr 2fr 50px;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .subject-grade {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .grade-excellent { color: var(--success-color); }
+        .grade-good { color: var(--warning-color); }
+        .grade-poor { color: var(--danger-color); }
+        .status-done { color: var(--success-color); }
+        .status-late { color: var(--warning-color); }
+        .status-missing { color: var(--danger-color); }
+
+        .works-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .works-table th, .works-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .works-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            color: var(--primary-color);
+        }
+
+        .works-table tr:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .forecast {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .forecast-item {
+            background-color: #f8f9fa;
+            padding: 18px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .forecast-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .forecast-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .forecast-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .activity-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            padding: 15px;
+            min-width: 120px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .stat-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .calendar-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            color: var(--text-light);
+            margin-top: 10px;
+            border: 2px dashed var(--border-color);
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        .card:nth-child(7) { animation-delay: 0.7s; }
+        .card:nth-child(8) { animation-delay: 0.8s; }
+
+        /* Тултипы */
+        [data-tooltip] {
+            position: relative;
+            cursor: pointer;
+        }
+
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 10;
+            margin-bottom: 8px;
+        }
+
+        /* Лоадер для графиков */
+        .chart-container {
+            position: relative;
+        }
+
+        .chart-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            border-radius: 8px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>АНАЛИТИКА УСПЕВАЕМОСТИ</h1>
+        <button class="campus-btn" onclick="location.href='campus.html'" data-tooltip="Перейти в основной интерфейс">
+            <i class="fas fa-university"></i> Перейти в Campus
+        </button>
+    </div>
+
+    <div class="dashboard">
+        <!-- Левая колонка -->
+        <div class="left-column">
+            <!-- Круговая диаграмма прогресса -->
+            <div class="card progress-container">
+                <h2><i class="fas fa-chart-pie"></i> Ваш прогресс</h2>
+                <div class="chart-container">
+                    <canvas id="progressChart" width="300" height="300"></canvas>
+                    <div class="chart-loader" id="progressLoader">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+                <div class="progress-info">Вы завершили <span id="progressPercent">75</span>% курса</div>
+                <button class="btn compare-btn" onclick="location.href='group_progress.html'">
+                    <i class="fas fa-users"></i> Сравнить с группой
+                </button>
+            </div>
+
+            <!-- Успеваемость по предметам -->
+            <div class="card">
+                <h2><i class="fas fa-book"></i> Успеваемость по предметам</h2>
+                <div class="subject-grid">
+                    <div class="subject-item">
+                        <div class="subject-name">Математика</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 82%; background-color: var(--success-color);"></div>
+                        </div>
+                        <div class="subject-grade grade-excellent">4.7</div>
+                    </div>
+                    <div class="subject-item">
+                        <div class="subject-name">Анализ данных</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%; background-color: var(--warning-color);"></div>
+                        </div>
+                        <div class="subject-grade grade-good">3.9</div>
+                    </div>
+                    <div class="subject-item">
+                        <div class="subject-name">Финансы</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 78%; background-color: var(--success-color);"></div>
+                        </div>
+                        <div class="subject-grade grade-excellent">4.5</div>
+                    </div>
+                    <div class="subject-item">
+                        <div class="subject-name">Эконометрика</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 91%; background-color: var(--success-color);"></div>
+                        </div>
+                        <div class="subject-grade grade-excellent">5.0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Столбчатая диаграмма динамики -->
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> Динамика успеваемости</h2>
+                <div class="chart-container">
+                    <canvas id="performanceChart" height="250"></canvas>
+                    <div class="chart-loader" id="performanceLoader">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Последние работы -->
+            <div class="card">
+                <h2><i class="fas fa-tasks"></i> Последние работы</h2>
+                <div class="table-responsive">
+                    <table class="works-table">
+                        <thead>
+                            <tr>
+                                <th>Предмет</th>
+                                <th>Задание</th>
+                                <th>Дата сдачи</th>
+                                <th>Оценка</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Математика</td>
+                                <td>Контрольная 3</td>
+                                <td>15.03.2023</td>
+                                <td class="grade-excellent">5.0</td>
+                                <td class="status-done">Сдано</td>
+                            </tr>
+                            <tr>
+                                <td>Анализ данных</td>
+                                <td>Лабораторная 2</td>
+                                <td>10.03.2023</td>
+                                <td class="grade-good">4.3</td>
+                                <td class="status-late">С опозданием</td>
+                            </tr>
+                            <tr>
+                                <td>Финансы</td>
+                                <td>Проект (этап 1)</td>
+                                <td>05.03.2023</td>
+                                <td class="grade-excellent">4.8</td>
+                                <td class="status-done">Сдано</td>
+                            </tr>
+                            <tr>
+                                <td>Эконометрика</td>
+                                <td>Эссе</td>
+                                <td>28.02.2023</td>
+                                <td class="grade-excellent">5.0</td>
+                                <td class="status-done">Сдано</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая колонка -->
+        <div class="right-column">
+            <!-- Позиция в рейтинге -->
+            <div class="card ranking">
+                <h2><i class="fas fa-trophy"></i> Позиция в группе</h2>
+                <div class="ranking-value">12/45</div>
+                <p>Вы входите в топ 27% студентов группы</p>
+                <div class="chart-container">
+                    <canvas id="comparisonChart" height="200"></canvas>
+                    <div class="chart-loader" id="comparisonLoader">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Календарь дедлайнов -->
+            <div class="card deadlines">
+                <h2><i class="fas fa-calendar-times"></i> Ближайшие дедлайны</h2>
+                <div class="deadline-item overdue">
+                    <span>Просрочено: 2 задания</span>
+                    <span><i class="fas fa-exclamation-circle"></i></span>
+                </div>
+                <div class="deadline-item overdue" data-tooltip="Просрочено на 3 дня">
+                    <span>Математика - Задание 5 (3 дня назад)</span>
+                    <span><i class="fas fa-exclamation-triangle"></i></span>
+                </div>
+                <div class="deadline-item overdue" data-tooltip="Просрочено на 1 день">
+                    <span>Анализ данных - Лабораторная 3 (1 день назад)</span>
+                    <span><i class="fas fa-exclamation-triangle"></i></span>
+                </div>
+                <div class="deadline-item upcoming" data-tooltip="Дедлайн через 2 дня">
+                    <span>Финансы - Проект (через 2 дня)</span>
+                    <span><i class="fas fa-clock"></i></span>
+                </div>
+                <div class="deadline-item upcoming" data-tooltip="Дедлайн через 5 дней">
+                    <span>Эконометрика - Эссе (через 5 дней)</span>
+                    <span><i class="fas fa-clock"></i></span>
+                </div>
+                <div class="deadline-item upcoming" data-tooltip="Дедлайн через 7 дней">
+                    <span>Цифровая математика - Тест (через 7 дней)</span>
+                    <span><i class="fas fa-clock"></i></span>
+                </div>
+            </div>
+
+            <!-- Статистика активности -->
+            <div class="card">
+                <h2><i class="fas fa-chart-bar"></i> Ваша активность</h2>
+                <div class="activity-stats">
+                    <div class="stat-item" data-tooltip="Выполнено за последний месяц">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Заданий выполнено</div>
+                    </div>
+                    <div class="stat-item" data-tooltip="Средний балл по всем предметам">
+                        <div class="stat-value">18.7</div>
+                        <div class="stat-label">Средний балл</div>
+                    </div>
+                    <div class="stat-item" data-tooltip="Процент посещенных занятий">
+                        <div class="stat-value">92%</div>
+                        <div class="stat-label">Посещаемость</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Календарь -->
+            <div class="card">
+                <h2><i class="fas fa-calendar-alt"></i> Календарь дедлайнов</h2>
+                <div class="calendar">
+                    <div class="calendar-placeholder">
+                        <i class="fas fa-calendar" style="font-size: 48px; opacity: 0.3;"></i>
+                        <p style="margin-left: 15px;">Интеграция с календарем</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Имитация загрузки данных
+        document.addEventListener('DOMContentLoaded', function() {
+            // Скрываем лоадеры через 1.5 секунды (имитация загрузки)
+            setTimeout(() => {
+                document.getElementById('progressLoader').style.display = 'none';
+                document.getElementById('performanceLoader').style.display = 'none';
+                document.getElementById('comparisonLoader').style.display = 'none';
+                
+                // Инициализация графиков
+                initCharts();
+                
+                // Анимация прогресс-баров
+                animateProgressBars();
+            }, 1500);
+        });
+
+        function initCharts() {
+            // Круговая диаграмма прогресса
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            const progressChart = new Chart(progressCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Завершено', 'В процессе', 'Осталось'],
+                    datasets: [{
+                        data: [75, 15, 10],
+                        backgroundColor: [
+                            '#4CAF50', // Завершено - зеленый
+                            '#FFC107', // В процессе - желтый
+                            '#E0E0E0'  // Осталось - серый
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 14
+                                },
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+
+            // Столбчатая диаграмма динамики успеваемости
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь', 'Январь', 'Февраль', 'Март'],
+                    datasets: [{
+                        label: 'Средний балл',
+                        data: [3.8, 4.1, 4.3, 4.0, 4.2, 4.5, 4.6],
+                        backgroundColor: '#3F51B5', // Индиго
+                        borderRadius: 6,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Средний балл: ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 3,
+                            max: 5,
+                            ticks: {
+                                stepSize: 0.5
+                            }
+                        }
+                    },
+                    animation: {
+                        delay: function(context) {
+                            return context.dataIndex * 100;
+                        }
+                    }
+                }
+            });
+
+            // График сравнения с группой
+            const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+            const comparisonChart = new Chart(comparisonCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Математика', 'Анализ данных', 'Финансы', 'Эконометрика', 'Цифровая математика'],
+                    datasets: [
+                        {
+                            label: 'Ваши результаты',
+                            data: [4.7, 3.9, 4.5, 5.0, 4.2],
+                            backgroundColor: 'rgba(26, 115, 232, 0.2)',
+                            borderColor: 'var(--primary-color)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'var(--primary-color)',
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Среднее по группе',
+                            data: [4.2, 4.0, 4.1, 4.3, 3.9],
+                            backgroundColor: 'rgba(95, 99, 104, 0.2)',
+                            borderColor: 'var(--text-light)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'var(--text-light)',
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 3,
+                            suggestedMax: 5,
+                            ticks: {
+                                stepSize: 0.5
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000
+                    }
+                }
+            });
+        }
+
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const targetWidth = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = targetWidth;
+                }, 100);
+            });
+        }
+
+        // Обновление процента прогресса с анимацией
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Запуск анимации числа прогресса
+        animateValue("progressPercent", 0, 75, 1000);
+    </script>
+</body>
+</html>
+
