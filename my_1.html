@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитика успеваемости - Стамплевская Мария</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: #7f8c8d;
+            margin-top: 0;
+        }
+        .summary-card {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .summary-card h2 {
+            margin-top: 0;
+        }
+        .grade {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .test-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .test-card h3 {
+            margin-top: 0;
+            color: #3498db;
+            font-size: 16px;
+        }
+        .test-score {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: #2ecc71;
+        }
+        .no-data {
+            color: #95a5a6;
+            font-style: italic;
+            text-align: center;
+        }
+        .group {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>Аналитика успеваемости</h1>
+            <p>Стамплевская Мария | МЭО22-5МЭиМБ22-5</p>
+        </div>
+        
+        <div class="summary-card">
+            <h2>Итоговая оценка за курс</h2>
+            <div class="grade">94.27</div>
+            <p>Отличный результат!</p>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Домашние самостоятельные работы (ДСР)</h2>
+            <div class="tests-grid">
+                <div class="test-card">
+                    <h3>Основные статистические показатели</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+                <div class="test-card">
+                    <h3>Введение синтетических признаков</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+                <div class="test-card">
+                    <h3>Пропуски и нечисловые данные</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 47%"></div>
+                    </div>
+                    <div class="test-score">0.47</div>
+                </div>
+                <div class="test-card">
+                    <h3>Оптимальность по Парето</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+                <div class="test-card">
+                    <h3>Элементы комбинаторики</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+                <div class="test-card">
+                    <h3>Классическая вероятностная схема</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+                <div class="test-card">
+                    <h3>Схема геометрических вероятностей</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+                <div class="test-card">
+                    <h3>Правила сложения и умножения вероятностей</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+                <div class="test-card">
+                    <h3>Формула полной вероятности и формула Байеса</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+                <div class="test-card">
+                    <h3>Независимые испытания. Схема Бернулли.</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 50%"></div>
+                    </div>
+                    <div class="test-score">0.5</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Аудиторные самостоятельные работы (АСР)</h2>
+            <div class="tests-grid">
+                <div class="test-card">
+                    <h3>Основные статистические показатели</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+                <div class="test-card">
+                    <h3>Введение синтетических признаков</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+                <div class="test-card">
+                    <h3>Пропуски и нечисловые данные</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 94%"></div>
+                    </div>
+                    <div class="test-score">0.94</div>
+                </div>
+                <div class="test-card">
+                    <h3>Оптимальность по Парето</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+                <div class="test-card">
+                    <h3>Элементы комбинаторики</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+                <div class="test-card">
+                    <h3>Классическая вероятностная схема</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+                <div class="test-card">
+                    <h3>Схема геометрических вероятностей</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+                <div class="test-card">
+                    <h3>Правила сложения и умножения вероятностей</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+                <div class="test-card">
+                    <h3>Формула полной вероятности и формула Байеса</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+                <div class="test-card">
+                    <h3>Независимые испытания. Схема Бернулли</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Контрольные работы и аттестации</h2>
+            <div class="group">
+                <h3>Контрольные работы</h3>
+                <div class="tests-grid">
+                    <div class="test-card">
+                        <h3>Контрольная работа №1</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 100%"></div>
+                        </div>
+                        <div class="test-score">2</div>
+                    </div>
+                    <div class="test-card">
+                        <h3>Контрольная работа №2</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 100%"></div>
+                        </div>
+                        <div class="test-score">5</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="group">
+                <h3>Аттестации</h3>
+                <div class="tests-grid">
+                    <div class="test-card">
+                        <h3>Промежуточная аттестация (Зачёт)</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 100%"></div>
+                        </div>
+                        <div class="test-score">60</div>
+                    </div>
+                    <div class="test-card">
+                        <h3>Промежуточная аттестация (Экзамен)</h3>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 0%"></div>
+                        </div>
+                        <div class="test-score">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">Творческие и бонусные задания</h2>
+            <div class="tests-grid">
+                <div class="test-card">
+                    <h3>Творческое задание (биржевые котировки)</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">1.36</div>
+                </div>
+                <div class="test-card">
+                    <h3>Бонусное задание (Итоговое)</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 100%"></div>
+                    </div>
+                    <div class="test-score">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Преподавательский дашборд | Аналитика успеваемости</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gray: #95a5a6;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #f5f7fa;
+            color: #333;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        /* Сайдбар */
+        .sidebar {
+            background: var(--dark);
+            color: white;
+            padding: 20px 0;
+        }
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-menu {
+            padding: 20px;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .menu-item i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        /* Основной контент */
+        .main-content {
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: var(--dark);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        /* Карточки статистики */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .stat-card.success .value { color: var(--success); }
+        .stat-card.warning .value { color: var(--warning); }
+        .stat-card.danger .value { color: var(--danger); }
+        .stat-card.info .value { color: var(--primary); }
+        /* Фильтры */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        .filter-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .filter-item select, 
+        .filter-item input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+        /* Таблицы и графики */
+        .content-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        tr:hover {
+            background: #f5f7fa;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        /* Графики (заглушки) */
+        .chart-placeholder {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            margin: 20px 0;
+        }
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Сайдбар -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Аналитика успеваемости</h2>
+                <p>Преподавательская панель</p>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Главная</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Студенты</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Тесты и задания</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Аналитика</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Шапка -->
+            <div class="header">
+                <h1>Дашборд преподавателя</h1>
+                <div class="user-info">
+                    <div class="user-avatar">ИП</div>
+                    <span>Иван Петров</span>
+                </div>
+            </div>
+
+            <!-- Карточки статистики -->
+            <div class="stats-cards">
+                <div class="stat-card success">
+                    <h3>Средний балл группы</h3>
+                    <div class="value">4.2</div>
+                    <small>из 5.0</small>
+                </div>
+                <div class="stat-card info">
+                    <h3>Студентов в группе</h3>
+                    <div class="value">24</div>
+                    <small>из 25 мест</small>
+                </div>
+                <div class="stat-card warning">
+                    <h3>Низкая успеваемость</h3>
+                    <div class="value">3</div>
+                    <small>студента</small>
+                </div>
+                <div class="stat-card danger">
+                    <h3>Пропуски занятий</h3>
+                    <div class="value">12%</div>
+                    <small>от общего числа</small>
+                </div>
+            </div>
+
+            <!-- Фильтры -->
+            <div class="filters">
+                <div class="filter-item">
+                    <label for="group-select">Группа</label>
+                    <select id="group-select">
+                        <option>МЭО22-5</option>
+                        <option>МЭО22-4</option>
+                        <option>МЭО22-3</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="subject-select">Дисциплина</label>
+                    <select id="subject-select">
+                        <option>Теория вероятностей</option>
+                        <option>Математическая статистика</option>
+                        <option>Эконометрика</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="date-range">Период</label>
+                    <input type="text" id="date-range" placeholder="Выберите даты...">
+                </div>
+                <div class="filter-item">
+                    <label for="search">Поиск студента</label>
+                    <input type="text" id="search" placeholder="ФИО или email...">
+                </div>
+            </div>
+
+            <!-- График успеваемости -->
+            <div class="content-section">
+                <div class="section-title">
+                    <h2>Динамика успеваемости</h2>
+                    <div>
+                        <button style="background: var(--primary); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-download"></i> Экспорт
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-placeholder">
+                    График средней успеваемости по неделям (можно реализовать с помощью Chart.js)
+                </div>
+            </div>
+
+            <!-- Таблица студентов -->
+            <div class="content-section">
+                <div class="section-title">
+                    <h2>Успеваемость студентов</h2>
+                    <div>
+                        <select style="padding: 5px 10px; border-radius: 4px; border: 1px solid #ddd;">
+                            <option>Все студенты</option>
+                            <option>Только отстающие</option>
+                            <option>Только успевающие</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th>Студент</th>
+                                <th>Email</th>
+                                <th>Средний балл</th>
+                                <th>Последний тест</th>
+                                <th>Активность</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Иванов А.С.</td>
+                                <td>ivanov@edu.ru</td>
+                                <td>4.8</td>
+                                <td>5.0</td>
+                                <td>95%</td>
+                                <td><span class="badge badge-success">Отличник</span></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Петрова Е.К.</td>
+                                <td>petrova@edu.ru</td>
+                                <td>4.2</td>
+                                <td>4.5</td>
+                                <td>88%</td>
+                                <td><span class="badge badge-success">Хорошист</span></td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Сидоров Д.М.</td>
+                                <td>sidorov@edu.ru</td>
+                                <td>3.5</td>
+                                <td>3.0</td>
+                                <td>75%</td>
+                                <td><span class="badge badge-warning">Средний</span></td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Кузнецова А.В.</td>
+                                <td>kuznetsova@edu.ru</td>
+                                <td>2.8</td>
+                                <td>2.5</td>
+                                <td>62%</td>
+                                <td><span class="badge badge-danger">Отстающий</span></td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Васильев П.О.</td>
+                                <td>vasiliev@edu.ru</td>
+                                <td>4.6</td>
+                                <td>4.8</td>
+                                <td>92%</td>
+                                <td><span class="badge badge-success">Отличник</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Анализ тестов -->
+            <div class="content-section">
+                <div class="section-title">
+                    <h2>Результаты контрольных точек</h2>
+                </div>
+                <div class="chart-placeholder">
+                    График распределения оценок по последнему тесту
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Тест/Задание</th>
+                            <th>Дата</th>
+                            <th>Средний балл</th>
+                            <th>Успеваемость</th>
+                            <th>Лучший результат</th>
+                            <th>Худший результат</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Контрольная работа 1</td>
+                            <td>15.09.2023</td>
+                            <td>4.2</td>
+                            <td>84%</td>
+                            <td>5.0 (Иванов А.С.)</td>
+                            <td>2.5 (Кузнецова А.В.)</td>
+                        </tr>
+                        <tr>
+                            <td>Тест по теме 2</td>
+                            <td>30.09.2023</td>
+                            <td>3.8</td>
+                            <td>76%</td>
+                            <td>5.0 (Васильев П.О.)</td>
+                            <td>2.0 (Сидоров Д.М.)</td>
+                        </tr>
+                        <tr>
+                            <td>Практическая работа</td>
+                            <td>15.10.2023</td>
+                            <td>4.1</td>
+                            <td>82%</td>
+                            <td>5.0 (Петрова Е.К.)</td>
+                            <td>3.0 (Кузнецова А.В.)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Здесь можно добавить логику для фильтров, графиков и т.д.
+        // Например, с использованием Chart.js для визуализации данных:
+        /*
+        const ctx = document.createElement('canvas');
+        document.querySelector('.chart-placeholder').replaceWith(ctx);
+        new Chart(ctx, {
+            type: 'line',
+            data: {...},
+            options: {...}
+        });
+        */
+    </script>
+</body>
+</html>
