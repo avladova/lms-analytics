@@ -1,0 +1,16 @@
+# Structural profiling and data preparation
+openpyxl>=3.1,<4.0
+pandas>=2.0,<3.0
+numpy>=1.24,<3.0
+
+# Statistical analysis, modelling and visualisation
+scipy>=1.10,<2.0
+scikit-learn>=1.3,<2.0
+statsmodels>=0.14,<1.0
+matplotlib>=3.7,<4.0
+seaborn>=0.12,<1.0
+plotly>=5.0,<7.0
+
+# Notebook support
+jupyterlab>=4.0,<5.0
+ipykernel>=6.0,<7.0

@@ -1,0 +1,24 @@
+# Python and notebook caches
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+venv/
+
+# Editor and operating-system files
+.DS_Store
+.vscode/
+.idea/
+
+# Generated reproducible artifacts and local workspaces
+artifacts/
+report/data_profile/
+report/private/
+*.log
+
+# Sensitive or non-reproducible local files
+.env
+*.env
+data/private/
+data/derived_private/
