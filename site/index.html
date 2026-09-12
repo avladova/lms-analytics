@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LMS Analytics — аналитика обучения</title>
+  <meta name="description" content="Статистическая аналитика успеваемости студентов и прогноз академического риска">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./"><span class="brand-mark">L</span><span>LMS <b>Analytics</b></span></a>
+      <div class="topbar-meta"><span class="live-dot"></span> Локальный анализ данных <span class="divider"></span> 2022–2025</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">ACADEMIC INTELLIGENCE / 01</p>
+          <h1>Успеваемость,<br><em>которую видно.</em></h1>
+          <p class="hero-text">Интерактивный обзор результатов обучения по группам и дисциплинам. Выберите срез данных, чтобы увидеть статистику и оценить прогноз академического риска.</p>
+        </div>
+        <div class="hero-orbit" aria-hidden="true"><span class="orbit orbit-1"></span><span class="orbit orbit-2"></span><span class="orbit-core">↗</span><span class="orbit-label">DATA<br>DRIVEN</span></div>
+      </section>
+
+      <section class="control-panel" aria-label="Параметры анализа">
+        <div class="control-heading"><span class="step">01</span><div><strong>Настройка среза</strong><small>Параметры выборки</small></div></div>
+        <label>Дисциплина<select id="subjectSelect"></select></label>
+        <label>Учебный год<select id="yearSelect"></select></label>
+        <label>Группа<select id="groupSelect"></select></label>
+        <button id="loadButton" class="primary-button"><span>Обновить анализ</span><b>↗</b></button>
+      </section>
+
+      <div id="status" class="status" role="status"><span class="spinner"></span> Загружаю список доступных данных…</div>
+
+      <section id="dashboard" class="dashboard" hidden>
+        <div class="section-intro"><div><p class="eyebrow">OVERVIEW / 02</p><h2 id="sectionTitle">Сводка по группе</h2></div><div class="data-badge"><span class="pulse"></span><span id="recordCount">—</span> студентов в выборке</div></div>
+        <div class="metric-grid">
+          <article class="metric-card accent"><div class="metric-label">Средний результат</div><div class="metric-value" id="meanValue">—</div><div class="metric-foot" id="meanFoot">по доступным оценкам</div></article>
+          <article class="metric-card"><div class="metric-label">Медиана</div><div class="metric-value" id="medianValue">—</div><div class="metric-foot">центральное значение</div></article>
+          <article class="metric-card"><div class="metric-label">Выполнено работ</div><div class="metric-value" id="completionValue">—</div><div class="metric-foot">доля заполненных оценок</div></article>
+          <article class="metric-card risk"><div class="metric-label">Зона внимания</div><div class="metric-value" id="riskValue">—</div><div class="metric-foot">студентов с риском</div></article>
+        </div>
+
+        <div class="content-grid">
+          <article class="panel chart-panel"><div class="panel-head"><div><p class="eyebrow">DISTRIBUTION</p><h3>Распределение результатов</h3></div><span class="panel-note">по студентам</span></div><div class="chart-wrap"><canvas id="distributionChart"></canvas></div><div class="legend-row"><span><i class="legend-dot violet"></i>Низкий результат</span><span><i class="legend-dot lilac"></i>Средний</span><span><i class="legend-dot mint"></i>Высокий</span></div></article>
+          <article class="panel chart-panel"><div class="panel-head"><div><p class="eyebrow">ACTIVITY</p><h3>Активность по работам</h3></div><span class="panel-note">топ-8 работ</span></div><div class="chart-wrap"><canvas id="activityChart"></canvas></div><div class="insight" id="activityInsight">Анализируем активность студентов…</div></article>
+        </div>
+
+        <div class="content-grid lower"><article class="panel"><div class="panel-head"><div><p class="eyebrow">FORECAST / 03</p><h3>Прогноз академического риска</h3></div><span class="risk-chip" id="riskChip">—</span></div><div class="forecast-body"><div class="forecast-score" id="forecastScore">—<small>/ 100</small></div><div class="forecast-copy"><strong id="forecastTitle">Расчёт прогноза</strong><p id="forecastText">Модель учитывает средний результат, долю выполненных работ и динамику активности в выбранном срезе.</p><div class="progress"><span id="forecastBar"></span></div><div class="progress-labels"><span>низкий риск</span><span>высокий риск</span></div></div></div><div class="method-note">Индекс риска — эвристическая оценка для навигации по данным, а не медицинское или административное заключение.</div></article>
+          <article class="panel"><div class="panel-head"><div><p class="eyebrow">DETAILS / 04</p><h3>Что стоит проверить</h3></div></div><div id="recommendations" class="recommendations"></div></article></div>
+
+        <div class="panel table-panel"><div class="panel-head"><div><p class="eyebrow">STUDENT SNAPSHOT</p><h3>Срез студентов</h3></div><span class="panel-note">первые 12 записей</span></div><div class="table-scroll"><table><thead><tr><th>№</th><th>Группа</th><th>Средний балл</th><th>Работ выполнено</th><th>Статус</th></tr></thead><tbody id="studentTable"></tbody></table></div></div>
+      </section>
+    </main>
+    <footer><span>LMS Analytics · исследовательский прототип</span><span>Данные обрабатываются в браузере и не отправляются на сервер</span></footer>
+  </div>
+  <script src="data-manifest.js"></script><script src="app.js"></script>
+</body>
+</html>
